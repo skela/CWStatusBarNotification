@@ -514,10 +514,28 @@ static void cancel_delayed_block(CWDelayedBlockHandle delayedHandle)
     }];
 }
 
+- (void)displayNotificationWithMessage:(NSString *)message forDuration:(NSTimeInterval)duration completion:(void (^)(void))completion
+{
+    [self displayNotificationWithMessage:message completion:^{
+        self.dismissHandle = perform_block_after_delay(duration, ^{
+            [self dismissNotificationWithCompletion:completion];
+        });
+    }];
+}
+
 - (void)displayNotificationWithAttributedString:(NSAttributedString *)attributedString completion:(void (^)(void))completion
 {
     [self displayNotificationWithMessage:[attributedString string] completion:completion];
     [[self notificationLabel] setAttributedText:attributedString];
+}
+
+- (void)displayNotificationWithAttributedString:(NSAttributedString *)attributedString forDuration:(NSTimeInterval)duration completion:(void (^)(void))completion
+{
+    [self displayNotificationWithAttributedString:attributedString completion:^{
+        self.dismissHandle = perform_block_after_delay(duration, ^{
+            [self dismissNotificationWithCompletion:completion];
+        });
+    }];
 }
 
 - (void)displayNotificationWithAttributedString:(NSAttributedString *)attributedString forDuration:(NSTimeInterval)duration
